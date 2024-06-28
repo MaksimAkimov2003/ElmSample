@@ -1,13 +1,11 @@
 package com.example.reduxtestapp.test.presentation.viewModel
 
 import android.util.Log
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.reduxtestapp.test.presentation.effect.MviEffect
 import com.example.reduxtestapp.test.presentation.effect.MviExampleEffect
-import com.example.reduxtestapp.test.presentation.reducer.Reducer
 import com.example.reduxtestapp.test.presentation.intent.MviExampleIntent
 import com.example.reduxtestapp.test.presentation.middleware.Middleware
+import com.example.reduxtestapp.test.presentation.reducer.Reducer
 import com.example.reduxtestapp.test.presentation.state.MviExampleState
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,7 +28,13 @@ class MviExampleViewModel(
     override val effect: SharedFlow<MviExampleEffect>
         get() = _effect.shareIn(viewModelScope, SharingStarted.WhileSubscribed(5000L))
 
-    override fun dispatch(intent: MviExampleIntent) {
+    /**
+     * Обратите внимание, что функция reduce теперь вызывается РЕКУРСИВНО(@see [handleIntentByMiddlewares])
+     */
+    override fun reduce(intent: MviExampleIntent) {
+        /**
+         * Лучше всегда логировать интенты, может быть кейс бесконечного вызова функции reduce
+         */
         Log.d("MviExampleViewModel", "dispatch: $intent")
 
         viewModelScope.launch {
@@ -41,7 +45,7 @@ class MviExampleViewModel(
 
     private suspend fun handleIntentByReducers(intent: MviExampleIntent) {
         reducers.forEach { reducer ->
-            val reducerResult = reducer.reduce(_state.value, intent)
+            val reducerResult = reducer.invoke(_state.value, intent)
             _state.update {
                 reducerResult.state
             }
@@ -53,10 +57,10 @@ class MviExampleViewModel(
 
     private suspend fun handleIntentByMiddlewares(intent: MviExampleIntent) {
         middlewares.forEach { middleware ->
-            val intentResult = middleware.handleIntent(_state.value, intent)
+            val intentResult = middleware.invoke(_state.value, intent)
 
-            if (intentResult != intent) {
-                dispatch(intentResult)
+            intentResult?.let {
+                reduce(intentResult)
             }
         }
 

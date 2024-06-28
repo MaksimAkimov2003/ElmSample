@@ -24,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.reduxtestapp.test.presentation.effect.MviExampleEffect
 import com.example.reduxtestapp.test.presentation.intent.MviExampleIntent
@@ -66,7 +67,7 @@ fun MviExampleScreen() {
     }
 
     LaunchedEffect(key1 = Unit) {
-        viewModel.dispatch(MviExampleIntent.OpenScreen)
+        viewModel.reduce(MviExampleIntent.OpenScreen)
     }
 
     Scaffold(
@@ -97,11 +98,12 @@ fun MviExampleScreen() {
             ) {
                 Button(onClick = {
                     if (state.buttonsState == MviExampleState.ButtonsState.IDLE) {
-                        viewModel.dispatch(MviExampleIntent.Increment)
+                        viewModel.reduce(MviExampleIntent.Increment)
                     }
                 }) {
                     when (state.buttonsState) {
                         MviExampleState.ButtonsState.LOADING -> CircularProgressIndicator(
+                            color = Color.White
                         )
 
                         MviExampleState.ButtonsState.IDLE -> Text(text = "Increment")
@@ -109,11 +111,12 @@ fun MviExampleScreen() {
                 }
                 Button(onClick = {
                     if (state.buttonsState == MviExampleState.ButtonsState.IDLE) {
-                        viewModel.dispatch(MviExampleIntent.Decrement)
+                        viewModel.reduce(MviExampleIntent.Decrement)
                     }
                 }) {
                     when (state.buttonsState) {
                         MviExampleState.ButtonsState.LOADING -> CircularProgressIndicator(
+                            color = Color.White
                         )
 
                         MviExampleState.ButtonsState.IDLE -> Text(text = "Decrement")

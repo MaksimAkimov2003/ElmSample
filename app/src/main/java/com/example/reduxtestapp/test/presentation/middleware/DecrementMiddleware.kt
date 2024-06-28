@@ -8,12 +8,12 @@ const val DELAY = 5000L
 
 class DecrementMiddleware : Middleware<MviExampleState, MviExampleIntent> {
 
-    override suspend fun handleIntent(
+    override suspend fun invoke(
         state: MviExampleState,
         intent: MviExampleIntent
-    ): MviExampleIntent {
+    ): MviExampleIntent? {
         if (intent !is MviExampleIntent.Decrement) {
-            return intent
+            return null
         }
         // Имитация какой-то долгой работы, сетевого запроса и т.д.
         delay(DELAY)

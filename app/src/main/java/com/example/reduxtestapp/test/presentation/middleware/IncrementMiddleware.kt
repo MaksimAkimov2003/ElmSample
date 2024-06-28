@@ -6,12 +6,12 @@ import kotlinx.coroutines.delay
 
 class IncrementMiddleware : Middleware<MviExampleState, MviExampleIntent> {
 
-    override suspend fun handleIntent(
+    override suspend fun invoke(
         state: MviExampleState,
         intent: MviExampleIntent
-    ): MviExampleIntent {
+    ): MviExampleIntent? {
         if (intent !is MviExampleIntent.Increment) {
-            return intent
+            return null
         }
         delay(DELAY)
         return MviExampleIntent.CounterValueUpdated(state.counter + 1)

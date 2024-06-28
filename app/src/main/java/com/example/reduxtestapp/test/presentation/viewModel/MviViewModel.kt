@@ -13,5 +13,5 @@ abstract class MviViewModel<State : MviState, Intent : MviIntent, Effect: MviEff
 
     abstract val effect: SharedFlow<Effect>
 
-    abstract fun dispatch(intent: Intent)
+    abstract fun reduce(intent: Intent)
 }

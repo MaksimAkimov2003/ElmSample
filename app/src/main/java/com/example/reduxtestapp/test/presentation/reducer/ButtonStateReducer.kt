@@ -4,9 +4,15 @@ import com.example.reduxtestapp.test.presentation.effect.MviExampleEffect
 import com.example.reduxtestapp.test.presentation.intent.MviExampleIntent
 import com.example.reduxtestapp.test.presentation.state.MviExampleState
 
+/**
+ * Отвечает ТОЛЬКО за кнопку
+ */
 class ButtonStateReducer : Reducer<MviExampleState, MviExampleIntent, MviExampleEffect> {
 
-    override fun reduce(state: MviExampleState, intent: MviExampleIntent): ReducerResult<MviExampleState, MviExampleEffect> =
+    override fun invoke(
+        state: MviExampleState,
+        intent: MviExampleIntent
+    ): ReducerResult<MviExampleState, MviExampleEffect> =
         when (intent) {
             is MviExampleIntent.CounterValueUpdated ->
                 ReducerResult(
