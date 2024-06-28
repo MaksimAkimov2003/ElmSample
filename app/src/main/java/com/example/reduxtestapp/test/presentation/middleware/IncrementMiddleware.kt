@@ -1,19 +1,29 @@
 package com.example.reduxtestapp.test.presentation.middleware
 
+import com.example.reduxtestapp.test.presentation.effect.MviExampleEffect
 import com.example.reduxtestapp.test.presentation.intent.MviExampleIntent
 import com.example.reduxtestapp.test.presentation.state.MviExampleState
 import kotlinx.coroutines.delay
 
-class IncrementMiddleware : Middleware<MviExampleState, MviExampleIntent> {
+class IncrementMiddleware : Middleware<MviExampleState, MviExampleIntent, MviExampleEffect> {
 
     override suspend fun handleIntent(
         state: MviExampleState,
         intent: MviExampleIntent
-    ): MviExampleIntent {
-        if (intent !is MviExampleIntent.Increment) {
-            return intent
+    ): MiddlewareResult<MviExampleIntent, MviExampleEffect> {
+        when (intent) {
+            is MviExampleIntent.Increment -> return MiddlewareResult(
+                intent = MviExampleIntent.IncrementStarted,
+                effects = listOf(MviExampleEffect.ShowSnackbar("Increment started"))
+            )
+
+            !is MviExampleIntent.IncrementStarted -> return MiddlewareResult(intent = intent)
+            else -> {}
         }
+
         delay(DELAY)
-        return MviExampleIntent.CounterValueUpdated(state.counter + 1)
+        return MiddlewareResult(
+            intent = MviExampleIntent.CounterValueUpdated(state.counter + 1)
+        )
     }
 }
