@@ -1,16 +1,17 @@
 package com.example.reduxtestapp.test.presentation.viewModel
 
+import androidx.lifecycle.ViewModel
 import com.example.reduxtestapp.test.presentation.effect.MviEffect
 import com.example.reduxtestapp.test.presentation.intent.MviIntent
 import com.example.reduxtestapp.test.presentation.state.MviState
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 
-interface MviViewModel<State : MviState, Intent : MviIntent, Effect: MviEffect> {
+abstract class MviViewModel<State : MviState, Intent : MviIntent, Effect: MviEffect>: ViewModel() {
 
-    val state: StateFlow<State>
+    abstract val state: StateFlow<State>
 
-    val effect: SharedFlow<Effect>
+    abstract val effect: SharedFlow<Effect>
 
-    fun dispatch(intent: Intent)
+    abstract fun dispatch(intent: Intent)
 }

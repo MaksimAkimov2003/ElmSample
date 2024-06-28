@@ -29,9 +29,9 @@ import com.example.reduxtestapp.test.presentation.effect.MviExampleEffect
 import com.example.reduxtestapp.test.presentation.intent.MviExampleIntent
 import com.example.reduxtestapp.test.presentation.middleware.DecrementMiddleware
 import com.example.reduxtestapp.test.presentation.middleware.IncrementMiddleware
-import com.example.reduxtestapp.test.presentation.middleware.OpenScreenMiddleware
 import com.example.reduxtestapp.test.presentation.reducer.ButtonStateReducer
 import com.example.reduxtestapp.test.presentation.reducer.CounterReducer
+import com.example.reduxtestapp.test.presentation.reducer.MainReducer
 import com.example.reduxtestapp.test.presentation.state.MviExampleState
 import com.example.reduxtestapp.test.presentation.viewModel.MviExampleViewModel
 
@@ -39,9 +39,13 @@ import com.example.reduxtestapp.test.presentation.viewModel.MviExampleViewModel
 fun MviExampleScreen() {
     val viewModel = remember {
         MviExampleViewModel(
-            reducers = setOf(CounterReducer(), ButtonStateReducer()),
+            reducers = setOf(
+                MainReducer(),
+                CounterReducer(),
+                ButtonStateReducer()
+            ),
             middlewares = setOf(
-                IncrementMiddleware(), DecrementMiddleware(), OpenScreenMiddleware()
+                IncrementMiddleware(), DecrementMiddleware()
             ),
         )
     }

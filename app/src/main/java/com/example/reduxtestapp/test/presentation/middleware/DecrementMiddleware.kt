@@ -1,22 +1,23 @@
 package com.example.reduxtestapp.test.presentation.middleware
 
-import com.example.reduxtestapp.test.presentation.effect.MviExampleEffect
 import com.example.reduxtestapp.test.presentation.intent.MviExampleIntent
 import com.example.reduxtestapp.test.presentation.state.MviExampleState
 import kotlinx.coroutines.delay
 
-class DecrementMiddleware : Middleware<MviExampleState, MviExampleIntent, MviExampleEffect> {
+const val DELAY = 5000L
+
+class DecrementMiddleware : Middleware<MviExampleState, MviExampleIntent> {
 
     override suspend fun handleIntent(
         state: MviExampleState,
         intent: MviExampleIntent
-    ): Pair<MviExampleIntent, MviExampleEffect?> {
+    ): MviExampleIntent {
         if (intent !is MviExampleIntent.Decrement) {
-            return intent to null
+            return intent
         }
         // Имитация какой-то долгой работы, сетевого запроса и т.д.
-        delay(1000)
+        delay(DELAY)
 
-        return MviExampleIntent.CounterValueUpdated(state.counter - 1) to MviExampleEffect.ShowSnackbar("Decrement clicked")
+        return MviExampleIntent.CounterValueUpdated(state.counter - 1)
     }
 }

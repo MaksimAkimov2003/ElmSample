@@ -19,9 +19,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MviExampleViewModel(
-    private val reducers: Set<Reducer<MviExampleState, MviExampleIntent>>,
-    private val middlewares: Set<Middleware<MviExampleState, MviExampleIntent, MviExampleEffect>>,
-) : ViewModel(), MviViewModel<MviExampleState, MviExampleIntent, MviExampleEffect> {
+    private val reducers: Set<Reducer<MviExampleState, MviExampleIntent, MviExampleEffect>>,
+    private val middlewares: Set<Middleware<MviExampleState, MviExampleIntent>>,
+) : MviViewModel<MviExampleState, MviExampleIntent, MviExampleEffect>() {
 
     private val _state = MutableStateFlow(MviExampleState())
     override val state = _state.asStateFlow()
@@ -32,32 +32,33 @@ class MviExampleViewModel(
 
     override fun dispatch(intent: MviExampleIntent) {
         Log.d("MviExampleViewModel", "dispatch: $intent")
-        handleIntentByReducers(intent)
-        handleIntentByMiddlewares(intent)
-    }
 
-    private fun handleIntentByReducers(intent: MviExampleIntent) {
-        reducers.forEach { reducer ->
-            _state.update {
-                val newState = reducer.reduce(_state.value, intent)
-                newState
-            }
-        }
-    }
-
-    private fun handleIntentByMiddlewares(intent: MviExampleIntent) {
         viewModelScope.launch {
-            middlewares.forEach { middleware ->
-                val (intentResult, effect) = middleware.handleIntent(_state.value, intent)
+            handleIntentByReducers(intent)
+            handleIntentByMiddlewares(intent)
+        }
+    }
 
-                if (intentResult != intent) {
-                    dispatch(intentResult)
-                }
-
-                effect?.let {
-                    _effect.emit(it)
-                }
+    private suspend fun handleIntentByReducers(intent: MviExampleIntent) {
+        reducers.forEach { reducer ->
+            val reducerResult = reducer.reduce(_state.value, intent)
+            _state.update {
+                reducerResult.state
+            }
+            reducerResult.effects.forEach { effect ->
+                _effect.emit(effect)
             }
         }
+    }
+
+    private suspend fun handleIntentByMiddlewares(intent: MviExampleIntent) {
+        middlewares.forEach { middleware ->
+            val intentResult = middleware.handleIntent(_state.value, intent)
+
+            if (intentResult != intent) {
+                dispatch(intentResult)
+            }
+        }
+
     }
 }
